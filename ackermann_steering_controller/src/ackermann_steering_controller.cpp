@@ -332,8 +332,15 @@ namespace ackermann_steering_controller{
     // Set Command
     const double wheel_vel = curr_cmd.lin/wheel_radius_; // omega = linear_vel / radius
     rear_wheel_joint_.setCommand(wheel_vel);
-    front_steer_joint_.setCommand(curr_cmd.ang);
 
+    if (std::abs(curr_cmd.lin) > std::numeric_limits<double>::epsilon())
+    {
+      front_steer_joint_.setCommand(std::atan(curr_cmd.ang * wheel_separation_h_ / curr_cmd.lin));
+    }
+    else
+    {
+      front_steer_joint_.setCommand(0);
+    }
   }
 
   void AckermannSteeringController::starting(const ros::Time& time)
